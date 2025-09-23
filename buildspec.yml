@@ -1,0 +1,15 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+  build:
+    commands:
+      - echo "Testing Glue scripts..."
+      - python -m py_compile scripts/*.py
+      - echo "Testing SQL syntax..."
+      - sqlfluff lint sql/*.sql || true
+artifacts:
+  files:
+    - scripts/*
+    - sql/*
