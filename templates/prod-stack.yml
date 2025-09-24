@@ -1,0 +1,15 @@
+Resources:
+  GlueJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Role: arn:aws:iam::470384041006:role/prod-glue-role
+      Command:
+        Name: prod-load-to-bronze
+        ScriptLocation: s3://prod-bucket-tl/scripts/prod-load-to-bronze.py
+      DefaultArguments:
+        "--job-bookmark-option": "job-bookmark-enable"
+      Connections:
+        Connections:
+          - prod-redshift-connection
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
