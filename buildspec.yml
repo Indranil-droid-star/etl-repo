@@ -9,7 +9,10 @@ phases:
       - python -m py_compile scripts/*.py
       - echo "Testing SQL syntax..."
       - sqlfluff lint sql/*.sql || true
+      - echo "Running orchestration..."
+      - python scripts/orchestrate.py
 artifacts:
   files:
     - scripts/*
     - sql/*
+    - templates/*
