@@ -17,7 +17,7 @@ BEGIN
             total_revenue, total_cost, total_profit,
             CASE WHEN total_revenue > 0 THEN (total_profit / total_revenue) * 100 ELSE 0 END AS profit_margin,
             ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY order_date DESC) AS rn
-        FROM bronze_uat.sales
+        FROM bronze.sales
     )
     SELECT
         region, country, item_type, sales_channel, order_priority, order_date,
