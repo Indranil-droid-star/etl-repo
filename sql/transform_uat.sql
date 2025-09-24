@@ -1,10 +1,7 @@
-CREATE OR REPLACE PROCEDURE transform_to_gold()
+CREATE OR REPLACE PROCEDURE transform_to_gold_uat()
 AS $$
 BEGIN
-    -- Truncate the Gold table
     TRUNCATE TABLE gold.transformed_data;
-
-    -- Insert unique rows using ROW_NUMBER to remove duplicates based on order_id
     INSERT INTO gold.transformed_data (
         region, country, item_type, sales_channel, order_priority, order_date,
         order_id, ship_date, units_sold, unit_price, unit_cost,
@@ -24,6 +21,6 @@ BEGIN
         order_id, ship_date, units_sold, unit_price, unit_cost,
         total_revenue, total_cost, total_profit, profit_margin
     FROM deduped
-    WHERE rn = 1;  -- Keep only the first row for each order_id
+    WHERE rn = 1;
 END;
 $$ LANGUAGE plpgsql;
