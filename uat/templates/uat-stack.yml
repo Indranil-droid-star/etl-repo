@@ -15,7 +15,7 @@ Resources:
         "--enable-auto-scaling": "true"  # Dynamic scaling (Glue 3.0+)
         "--job-language": "python"  # Python 3
         "--job-retries": "0"  # Number of retries
-        "--job-timeout": "2880"  # 8 hours (default for Glue 5.0)
+        "--job-timeout": "480"  # 8 hours (default for Glue 5.0)
       Connections:
         Connections:
           - uat-redshift-connection
