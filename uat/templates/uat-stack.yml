@@ -5,7 +5,7 @@ Resources:
       Role: arn:aws:iam::470384041006:role/uat-glue-role
       Name: uat-load-to-bronze
       Command:
-        Name: glueet1
+        Name: glueetl
         ScriptLocation: s3://uat-bucket-tl/scripts/etl_job_uat.py
       DefaultArguments:
         "--job-bookmark-option": "disable"  # As specified
