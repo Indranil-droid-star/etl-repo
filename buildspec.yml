@@ -3,16 +3,21 @@ phases:
   install:
     runtime-versions:
       python: 3.9
+    commands:
+      - pip install sqlfluff==2.3.5
   build:
     commands:
-      - echo "Testing Glue scripts..."
-      - python -m py_compile scripts/*.py
-      - echo "Testing SQL syntax..."
-      - sqlfluff lint sql/*.sql || true
-      - echo "Running orchestration..."
-      - python scripts/orchestrate.py
+      - echo "Testing ETL scripts..."
+      - python -m py_compile uat/scripts/etl_job_uat.py
+      # - python -m py_compile prod/scripts/etl_job_prod.py
+      - echo "Copying scripts to S3..."
+      - aws s3 cp uat/scripts/etl_job.py s3://uat-bucket-tl/scripts/etl_job_uat.py
+      # - aws s3 cp prod/scripts/etl_job_prod.py s3://prod-bucket-tl/scripts/etl_job_prod.py
+      - aws s3 cp uat/templates/uat-stack.yml s3://uat-bucket-tl/templates/uat-stack.yml
+      # - aws s3 cp prod/templates/prod-stack.yml s3://prod-bucket-tl/templates/prod-stack.yml
 artifacts:
   files:
-    - scripts/*
-    - sql/*
-    - templates/*
+    - uat/scripts/*
+    # - prod/scripts/*
+    - uat/templates/*
+    # - prod/templates/*
