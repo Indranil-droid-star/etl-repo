@@ -1,0 +1,15 @@
+Resources:
+  GlueJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Role: arn:aws:iam::470384041006:role/uat-glue-role
+      Command:
+        Name: uat-etl-job
+        ScriptLocation: s3://uat-bucket-tl/scripts/etl_job_uat.py
+      DefaultArguments:
+        "--job-bookmark-option": "job-bookmark-enable"
+      Connections:
+        Connections:
+          - uat-redshift-connection
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
