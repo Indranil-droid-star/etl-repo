@@ -29,6 +29,7 @@ while True:
 
 # Step 2: Combine data from catalog tables
 catalog_tables = ['uat_sales_csv', 'uat_sales_parquet']
+table1st = ''
 dynamic_frames = []
 for table_name in catalog_tables:
     try:
@@ -38,6 +39,8 @@ for table_name in catalog_tables:
             transformation_ctx=f"source_{table_name}"
         )
         dynamic_frames.append(df)
+        if table1st == '':
+            table1st = table_name
     except Exception as e:
         print(f"Error reading table {table_name}: {str(e)}")
         continue
@@ -60,14 +63,32 @@ redshift_data_client = boto3.client('redshift-data')
 workgroup_name = 'uat-workgroup'
 database = 'dev'
 
-response = glue_client.get_table(DatabaseName='uat_glue_catalog', Name='raw_csv')
+response = glue_client.get_table(DatabaseName='uat_glue_catalog', Name=table1st)
 columns = [col['Name'] for col in response['Table']['StorageDescriptor']['Columns']]
 base_schema = ['region', 'country', 'item_type', 'sales_channel', 'order_priority', 
                'order_date', 'order_id', 'ship_date', 'units_sold', 'unit_price', 
                'unit_cost', 'total_revenue', 'total_cost', 'total_profit']
 new_columns = [col for col in columns if col not in base_schema]
-sql_bronze = f"CREATE SCHEMA IF NOT EXISTS bronze; DROP TABLE IF EXISTS bronze.sales; CREATE TABLE bronze.sales (region VARCHAR(255), country VARCHAR(255), item_type VARCHAR(255), sales_channel VARCHAR(255), order_priority VARCHAR(255), order_date VARCHAR(255), order_id BIGINT, ship_date VARCHAR(255), units_sold BIGINT, unit_price DOUBLE PRECISION, unit_cost DOUBLE PRECISION, total_revenue DOUBLE PRECISION, total_cost DOUBLE PRECISION, total_profit DOUBLE PRECISION{''.join([f', {col} VARCHAR(255)' for col in new_columns])});"
-
+sql_bronze = f"""
+CREATE SCHEMA IF NOT EXISTS bronze;
+DROP TABLE IF EXISTS bronze.sales;
+CREATE TABLE bronze.sales (
+    region VARCHAR(255),
+    country VARCHAR(255),
+    item_type VARCHAR(255),
+    sales_channel VARCHAR(255),
+    order_priority VARCHAR(255),
+    order_date VARCHAR(255),
+    order_id BIGINT,
+    ship_date VARCHAR(255),
+    units_sold BIGINT,
+    unit_price DOUBLE PRECISION,
+    unit_cost DOUBLE PRECISION,
+    total_revenue DOUBLE PRECISION,
+    total_cost DOUBLE PRECISION,
+    total_profit DOUBLE PRECISION{''.join([f', {col} VARCHAR(255)' for col in new_columns])}
+);
+"""
 redshift_data_client.execute_statement(
     WorkgroupName=workgroup_name,
     Database=database,
@@ -85,8 +106,28 @@ glueContext.write_dynamic_frame.from_jdbc_conf(
 )
 
 # Step 5: Create gold schema dynamically
-sql_gold = f"CREATE SCHEMA IF NOT EXISTS gold; DROP TABLE IF EXISTS gold.transformed_data; CREATE TABLE gold.transformed_data (region VARCHAR(255), country VARCHAR(255), item_type VARCHAR(255), sales_channel VARCHAR(255), order_priority VARCHAR(255), order_date VARCHAR(255), order_id BIGINT, ship_date VARCHAR(255), units_sold BIGINT, unit_price DOUBLE PRECISION, unit_cost DOUBLE PRECISION, total_revenue DOUBLE PRECISION, total_cost DOUBLE PRECISION, total_profit DOUBLE PRECISION, profit_margin DOUBLE PRECISION, impact DOUBLE PRECISION{''.join([f', {col} VARCHAR(255)' for col in new_columns])});"
-
+sql_gold = f"""
+CREATE SCHEMA IF NOT EXISTS gold;
+DROP TABLE IF EXISTS gold.transformed_data;
+CREATE TABLE gold.transformed_data (
+    region VARCHAR(255),
+    country VARCHAR(255),
+    item_type VARCHAR(255),
+    sales_channel VARCHAR(255),
+    order_priority VARCHAR(255),
+    order_date VARCHAR(255),
+    order_id BIGINT,
+    ship_date VARCHAR(255),
+    units_sold BIGINT,
+    unit_price DOUBLE PRECISION,
+    unit_cost DOUBLE PRECISION,
+    total_revenue DOUBLE PRECISION,
+    total_cost DOUBLE PRECISION,
+    total_profit DOUBLE PRECISION,
+    profit_margin DOUBLE PRECISION,
+    impact DOUBLE PRECISION{''.join([f', {col} VARCHAR(255)' for col in new_columns])}
+);
+"""
 redshift_data_client.execute_statement(
     WorkgroupName=workgroup_name,
     Database=database,
