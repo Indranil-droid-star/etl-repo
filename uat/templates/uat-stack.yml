@@ -8,10 +8,14 @@ Resources:
         Name: glueet1
         ScriptLocation: s3://uat-bucket-tl/scripts/etl_job_uat.py
       DefaultArguments:
-        "--job-bookmark-option": "disable"
-        "--glue-version": "4.0" 
-        "--worker-type": "G.1X"  
-        "--number-of-workers": "2"
+        "--job-bookmark-option": "disable"  # As specified
+        "--glue-version": "4.0"  # Updated to supported version (verify in region)
+        "--worker-type": "G.1X"  # 4 vCPU, 16GB RAM
+        "--number-of-workers": "2"  # Requested number of workers
+        "--enable-auto-scaling": "true"  # Dynamic scaling (Glue 3.0+)
+        "--job-language": "python"  # Python 3
+        "--job-retries": "0"  # Number of retries
+        "--job-timeout": "480"  # 8 hours (default for Glue 5.0)
       Connections:
         Connections:
           - uat-redshift-connection
