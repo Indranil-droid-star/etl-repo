@@ -8,7 +8,7 @@ Resources:
         Name: glueet1
         ScriptLocation: s3://uat-bucket-tl/scripts/etl_job_uat.py
       DefaultArguments:
-        "--job-bookmark-option": "job-bookmark-enable"
+        "--job-bookmark-option": "disable"
         "--glue-version": "4.0" 
         "--worker-type": "G.1X"  
         "--number-of-workers": "2"
