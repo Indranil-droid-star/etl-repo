@@ -18,6 +18,6 @@ Resources:
         "--job-timeout": "2880"
       Connections:
         Connections:
-          - Name: uat-redshift-connection
+          - uat-redshift-connection
       ExecutionProperty:
         MaxConcurrentRuns: 1
