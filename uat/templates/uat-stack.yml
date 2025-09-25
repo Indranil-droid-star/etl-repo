@@ -3,8 +3,9 @@ Resources:
     Type: AWS::Glue::Job
     Properties:
       Role: arn:aws:iam::470384041006:role/uat-glue-role
+      Name: uat-load-to-bronze
       Command:
-        Name: uat-load-to-bronze
+        Name: glueet1
         ScriptLocation: s3://uat-bucket-tl/scripts/etl_job_uat.py
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-enable"
