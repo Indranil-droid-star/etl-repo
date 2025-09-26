@@ -7,7 +7,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
-from pyspark.sql.functions import lit, row_number, when
+from pyspark.sql.functions import lit, row_number, when, col
 from pyspark.sql.window import Window
 
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
@@ -26,6 +26,7 @@ while True:
     if response['Crawler']['State'] == 'READY':
         break
     time.sleep(10)
+
 
 # Step 2: Combine data from catalog tables
 catalog_tables = ['uat_sales_csv', 'uat_sales_parquet']
